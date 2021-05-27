@@ -16,7 +16,7 @@ app.get('/:room', (req, res) => {
 })
 
 io.on('connection', socket => {
-    socket.on('join room', (roomId, userId) => { //luisteren naar of mensen een kamer joinen
+    socket.on('join-room', (roomId, userId) => { //luisteren naar of mensen een kamer joinen
         console.log(roomId, userId)
     }) 
 })
