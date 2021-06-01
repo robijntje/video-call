@@ -15,15 +15,30 @@ navigator.mediaDevices.getUserMedia({
     audio: true
 }).then(stream => {
 addVideoStream(userVideo, stream)
+socket.on('new-user', userId => {
+    connectToNewUser(userId, stream)
+})
 })
 
 newPeer.on('open', id => {
     socket.emit('join-room', ROOM_ID, id)
 })
 
-socket.on('new-user', userId => {
-    console.log('Gebruiker verbonden > ' + userId)
-})
+//Oude testcode
+//socket.on('new-user', userId => {
+ //   console.log('Gebruiker verbonden > ' + userId)
+//})
+
+function connectToNewUser(userId, stream) {
+    const call = newPeer.call(userId, stream) //stuur stream naar peer
+    const video = document.createElement('video')
+    call.on('stream', userVideoStream => { //luisteren naar stream / stream van andere gebruiker ontvangen
+        addVideoStream(video, userVideoStream)
+    }) 
+    call.on('close'), () => { //constroleert of gebruiker weggaat en verwijderd stream
+        video.remove()
+    }
+}
 
 function addVideoStream(video, stream) {
     video.srcObject = stream
